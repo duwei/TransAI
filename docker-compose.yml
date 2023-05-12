@@ -1,0 +1,42 @@
+version: '3'
+
+networks:
+  backend:
+  frontend:
+
+services:
+  database:
+    image: mariadb:latest
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./data/database:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_NAME: database
+    networks:
+      - backend
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - backend
+
+  web:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT}:80"
+    volumes:
+      - ./static:/var/www/html:delegated
+      - ./logs/nginx:/var/log/nginx
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:consistent
+      - ./conf/nginx/default.conf:/etc/nginx/conf.d/default.conf:consistent
+    networks:
+      - backend
