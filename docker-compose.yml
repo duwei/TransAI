@@ -40,3 +40,15 @@ services:
       - ./conf/nginx/default.conf:/etc/nginx/conf.d/default.conf:consistent
     networks:
       - backend
+
+  ai:
+    build:
+      context: .
+      dockerfile: dockerfiles/fastapi.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${AI_PORT}:80"
+    depends_on:
+      - web
+    networks:
+      - backend
